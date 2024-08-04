@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Three.js Scene</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <label for="width">Width:</label>
+        <input type="number" id="width" value="1" step="1" min="1">
+        <label for="length">Length:</label>
+        <input type="number" id="length" value="1" step="1" min="1">
+        <button id="addCubes">Add Cubes</button>
+    </div>
+    <script type="module">
+        import * as THREE from 'https://cdn.skypack.dev/three@0.150.1';
+
+        // Create scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('#262646');
+
+        // Create camera
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 1, 10);
+        const pivot = new THREE.Group();
+        pivot.add(camera);
+        scene.add(pivot);
+
+        // Create renderer
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create light
+        const light = new THREE.PointLight(0xffffff, 1, 100);
+        light.position.set(10, 10, 10);
+        scene.add(light);
+
+        // Create a group to hold the cubes
+        const cubeGroup = new THREE.Group();
+        scene.add(cubeGroup);
+
+        // Load texture
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load('https://threejs.org/examples/textures/crate.gif');
+
+        // Function to add a grid of cubes
+        function addCubes(width, length) {
+            const cubeSize = 1; // Fixed size of each cube
+            const spacing = 0.05; // Reduced spacing between cubes
+            for (let i = 0; i < width; i++) {
+                for (let j = 0; j < length; j++) {
+                    const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+                    const material = new THREE.MeshBasicMaterial({ map: texture });
+                    const cube = new THREE.Mesh(geometry, material);
+                    cube.position.set(i * (cubeSize + spacing) - (width - 1) * (cubeSize + spacing) / 2, 0, j * (cubeSize + spacing) - (length - 1) * (cubeSize + spacing) / 2);
+                    cubeGroup.add(cube);
+                }
+            }
+        }
+
+        // Event listener for the addCubes button
+        document.getElementById('addCubes').addEventListener('click', () => {
+            const width = parseInt(document.getElementById('width').value);
+            const length = parseInt(document.getElementById('length').value);
+            cubeGroup.clear();
+            addCubes(width, length);
+        });
+
+        // Mouse controls
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        const rotationSensitivity = 0.01;
+        const rollLimit = Math.PI / 4; // Limit the roll to +/- 45 degrees
+
+        function onMouseDown(event) {
+            isDragging = true;
+            previousMousePosition = {
+                x: event.clientX,
+                y: event.clientY
+            };
+        }
+
+        function onMouseMove(event) {
+            if (!isDragging) return;
+
+            const deltaMove = {
+                x: event.clientX - previousMousePosition.x,
+                y: event.clientY - previousMousePosition.y
+            };
+
+            pivot.rotation.y -= deltaMove.x * rotationSensitivity;
+
+            const newXRotation = pivot.rotation.x - deltaMove.y * rotationSensitivity;
+            if (newXRotation > -rollLimit && newXRotation < rollLimit) {
+                pivot.rotation.x = newXRotation;
+            }
+
+            previousMousePosition = {
+                x: event.clientX,
+                y: event.clientY
+            };
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+        }
+
+        function onContextMenu(event) {
+            event.preventDefault();
+        }
+
+        document.addEventListener('mousedown', onMouseDown, false);
+        document.addEventListener('mousemove', onMouseMove, false);
+        document.addEventListener('mouseup', onMouseUp, false);
+        document.addEventListener('contextmenu', onContextMenu, false);
+
+        // Render loop
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affichage des Données API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #data-container {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Données de l'API</h1>
+    <div id="data-container">Chargement des données...</div>
+
+    <script>
+        const options = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json'
+  }
+};
+
+fetch('http://localhost:3000/proxy?url=https://publicapi.nationsglory.fr/user/jules92', options)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    const container = document.getElementById('data-container');
+    container.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+  })
+  .catch(err => {
+    const container = document.getElementById('data-container');
+    container.innerHTML = `<p style="color: red;">Erreur: ${err.message}</p>`;
+  });
+
+    </script>
+</body>
+</html>
