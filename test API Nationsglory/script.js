@@ -1,6 +1,6 @@
 async function fetchData() {
-    const accessToken = 'VOTRE_ACCESS_TOKEN';  // Remplacez par votre token
-    const clientSecret = 'VOTRE_CLIENT_SECRET';  // Remplacez par votre secret
+    const accessToken = '97d54fae7faebab374ef7be9c6af23907ed804cab123814935c5a0124e34';  // Remplacez par votre token
+    const clientSecret = 'SECRET_5xTHJ3U!wgUzdfzuFX%YBf7aR*Of@btnb537f57ad2b2560dd1037117042faf0b';  // Remplacez par votre secret
     const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
     const targetUrl = 'https://publicapi.nationsglory.fr/oauth/checkToken';
   
