@@ -33,7 +33,7 @@
 
         // Create camera
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 1, 10);
+        camera.position.set(0, 5, 10);
         const pivot = new THREE.Group();
         pivot.add(camera);
         scene.add(pivot);
@@ -83,7 +83,8 @@
         let isDragging = false;
         let previousMousePosition = { x: 0, y: 0 };
         const rotationSensitivity = 0.01;
-        const rollLimit = Math.PI / 4; // Limit the roll to +/- 45 degrees
+        const yawLimitLeft = -Math.PI / 2; // Limit the yaw to -90 degrees
+        const yawLimitRight = 0; // Limit the yaw to 0 degrees
 
         function onMouseDown(event) {
             isDragging = true;
@@ -101,12 +102,13 @@
                 y: event.clientY - previousMousePosition.y
             };
 
-            pivot.rotation.y -= deltaMove.x * rotationSensitivity;
+            const newYRotation = pivot.rotation.y - deltaMove.x * rotationSensitivity;
+            if (newYRotation > yawLimitLeft && newYRotation < yawLimitRight) {
+                pivot.rotation.y = newYRotation;
+            }
 
             const newXRotation = pivot.rotation.x - deltaMove.y * rotationSensitivity;
-            if (newXRotation > -rollLimit && newXRotation < rollLimit) {
-                pivot.rotation.x = newXRotation;
-            }
+            pivot.rotation.x = newXRotation;
 
             previousMousePosition = {
                 x: event.clientX,
