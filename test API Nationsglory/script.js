@@ -5,7 +5,12 @@ async function fetchData() {
     const targetUrl = 'https://publicapi.nationsglory.fr/oauth/checkToken';
   
     try {
-      const response = await fetch(`${proxyUrl}${targetUrl}?access_token=${accessToken}&client_secret=${clientSecret}`);
+      const response = await fetch(`${proxyUrl}${targetUrl}?access_token=${accessToken}&client_secret=${clientSecret}`, {
+      headers: {
+        'Origin': 'https://lepionnier92.github.io',  // Remplacez par le domaine de votre site
+        'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
